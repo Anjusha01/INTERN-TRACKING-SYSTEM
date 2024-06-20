@@ -1,0 +1,26 @@
+.placeholders::placeholder {
+    color: #aaa; /* Placeholder color */
+    font-size: 0.8rem;
+  }
+  
+  .form-control.placeholders {
+    font-size: 1rem; /* Font size for form controls */
+    margin-top: 1vw;
+  }
+  
+  .form-label {
+    /* Optional: Style for form labels */
+  }
+  
+  .btn-register {
+    /* Optional: Style for register button */
+  }
+  .input-label {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: white;
+    padding: 0 5px;
+    color: #999;
+    font-size: 12px;
+}

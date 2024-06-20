@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,13 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+:root {
+  --gray-color: #2D5A6D; 
+}
+
+.bgGray {
+  background-color: var(--gray-color) !important; /*background color used in entire front end*/
+ 
 }
