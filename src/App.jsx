@@ -17,6 +17,7 @@ import AssignTask from './pages/TrainerPages/AssignTask';
 import TrainerRegister from './components/RegisterLogin/TrainerRegister';
 import InternRegister from './components/RegisterLogin/InternRegister';
 import Login from './components/RegisterLogin/Login';
+import UpdateCourse from './components/Admin/UpdateCourse';
 
 function App() {
   return (
@@ -26,13 +27,14 @@ function App() {
           <Route index element={<Home/>}/>
           <Route path='trainer-register-login' element={<TrainerRegister/>}/>
           <Route path='intern-register-login' element={<InternRegister/>}/>
-          <Route path='login' element={<Login/>}/>
+          <Route path='/login' element={<Login/>}/>
         </Route>
         <Route path='/admin' element={<NavbarAdmin/>}>
            <Route index element={<AdminHome/>}/>
             <Route path='manageTrainer' element={<ManageTrainer/>}/>
             <Route path='manageIntern' element={<ManageIntern/>}/>
             <Route path='manageCourse' element={<ManageCourse/>}/>
+            <Route path='updateCourse/:id' element={<UpdateCourse/>}/>
         </Route>
         <Route path='/intern' element={<InternNavBar/>}>
           <Route index element={<InternHome/>}/>

@@ -3,7 +3,7 @@ import { Navbar, Nav, Container, Row, Col, Button } from 'react-bootstrap';
 import logo from '../../assets/images/smartinternz.png';
 import './AdminTopNav.css'
 
-const AdminTopNav = ({ toggleSideNav }) => {
+const AdminTopNav = ({ toggleSideNav, logout }) => {
     return (
         <Navbar className="bgGray topnav" expand="lg">
             <Container fluid className='d-flex justify-content-center'>
@@ -21,7 +21,11 @@ const AdminTopNav = ({ toggleSideNav }) => {
                             ☰
                         </Button>
                         <Nav className='ms-auto text-white'>
-                            <Nav.Item>Welcome</Nav.Item>
+                            <Nav.Item>
+                                <button onClick={logout}>
+                                    Logout
+                                </button>
+                            </Nav.Item>
                         </Nav>
                     </Col>
                 </Row>

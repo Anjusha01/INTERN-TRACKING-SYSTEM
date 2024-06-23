@@ -1,18 +1,46 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
-const AddCourse = () => {
+const UpdateCourse = () => {
+    const { id } = useParams(); 
     const [data, setData] = useState({
-        courseName: '', // Initialized
-        description: '', // Initialized
-        syllabusFile: null, // Initialized
-        imageFile: null, // Initialized
+        courseName: '',
+        description: '',
+        syllabusFile: null,
+        imageFile: null,
     });
-    const [errors, setErrors] = useState({}); // Initialized
+    const [errors, setErrors] = useState({});
     const [imagePreview, setImagePreview] = useState('');
 
+    useEffect(() => {
+        // Fetch course details based on id
+        if (id) {
+            const fetchCourseDetails = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:5000/course/viewCourseByName/${id}`);
+                    setData({
+                        courseName: response.data.courseName,
+                        description: response.data.description,
+                        syllabusFile: response.data.syllabusFile || null,
+                        imageFile: response.data.imageFile || null,
+                    });
+
+                    // Set image preview
+                    if (response.data.imageFile) {
+                        setImagePreview(`http://localhost:5000/uploads/images/${response.data.imageFile}`);
+                    }
+
+                    // If syllabus file URL is available, you can set it similarly
+                } catch (error) {
+                    console.error('Error fetching course details:', error);
+                }
+            };
+            fetchCourseDetails();
+        }
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,10 +54,8 @@ const AddCourse = () => {
         const { name, files } = e.target;
         const selectedFile = files[0];
 
-        // Update state with selected file
         setData({ ...data, [name]: selectedFile });
 
-        // Generate a preview URL for images
         if (name === 'imageFile') {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -40,21 +66,17 @@ const AddCourse = () => {
             }
         }
 
-        // Clear previous error for this input field
         if (errors[name]) {
             setErrors({ ...errors, [name]: '' });
         }
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate the form fields
         let newErrors = {};
         if (!data.courseName) newErrors.courseName = 'Course Name is required';
         if (!data.description) newErrors.description = 'Description is required';
-        if (!data.imageFile) newErrors.imageFile = 'Image File is required';
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -66,28 +88,19 @@ const AddCourse = () => {
         formData.append('description', data.description);
         formData.append('syllabusFile', data.syllabusFile);
         formData.append('imageFile', data.imageFile);
-        console.log(formData);
 
         try {
-            let response = await axios.post('http://localhost:5000/admin/addCourse', formData, {
+            let response = await axios.put(`http://localhost:5000/admin/updateCourse/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
             console.log(response);
 
-            // Clear the form fields after successful submission
-            setData({
-                courseName: '', // Reset
-                description: '', // Reset
-                syllabusFile: null, // Reset
-                imageFile: null, // Reset
-            });
-            setImagePreview('');
-            setErrors({});
-            toast.success('Course added successfully!');
+            toast.success('Course updated successfully!');
         } catch (e) {
-            console.log(e.message);
+            console.error('Error updating course:', e);
+            toast.error('Failed to update course.');
         }
     };
 
@@ -123,7 +136,7 @@ const AddCourse = () => {
                                     placeholder="Enter course description"
                                     value={data.description}
                                     onChange={handleChange}
-                                    isInvalid={!!errors.description} // Added validation feedback
+                                    isInvalid={!!errors.description}
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {errors.description}
@@ -134,6 +147,13 @@ const AddCourse = () => {
                         <Form.Group controlId="formSyllabusFile" as={Row} className='m-2'>
                             <Form.Label column md="3">Syllabus File:</Form.Label>
                             <Col md="9">
+                                {data.syllabusFile && (
+                                    <div>
+                                        <p>Current Syllabus File: {data.syllabusFile.name}</p>
+                                        {/* Optionally display a link to view/download the existing file */}
+                                        <a href={`http://localhost:5000/uploads/syllabus/${data.syllabusFile.name}`} target="_blank" rel="noopener noreferrer">View Existing Syllabus</a>
+                                    </div>
+                                )}
                                 <Form.Control
                                     type="file"
                                     name="syllabusFile"
@@ -149,18 +169,20 @@ const AddCourse = () => {
                         <Form.Group controlId="formImageFile" as={Row} className='m-2'>
                             <Form.Label column md="3">Image:<span className="text-danger">*</span></Form.Label>
                             <Col md="9">
+                                {imagePreview && (
+                                    <div className="mt-2">
+                                        <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+                                        <p>Current Image:</p>
+                                        <img src={imagePreview} alt="Current" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+                                    </div>
+                                )}
                                 <Form.Control
                                     type="file"
                                     name="imageFile"
                                     onChange={handleFile}
                                     accept="image/*"
-                                    isInvalid={!!errors.imageFile} // Added validation feedback
+                                    isInvalid={!!errors.imageFile}
                                 />
-                                {imagePreview && (
-                                    <div className="mt-2">
-                                        <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
-                                    </div>
-                                )}
                                 <Form.Control.Feedback type="invalid">
                                     {errors.imageFile}
                                 </Form.Control.Feedback>
@@ -172,7 +194,7 @@ const AddCourse = () => {
 
                         <div className="text-center">
                             <Button type='submit' className='bgGray border-0 my-3'>
-                                Add Course
+                                Update Course
                             </Button>
                         </div>
                     </Form>
@@ -183,4 +205,4 @@ const AddCourse = () => {
     );
 };
 
-export default AddCourse;
+export default UpdateCourse;

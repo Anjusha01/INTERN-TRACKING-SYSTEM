@@ -31,17 +31,20 @@ const Login = () => {
         try {
             let response = await axios.post('http://localhost:5000/auth/login', data);
             console.log(response);
-            if(response.data === 'admin'){
+            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('username',response.data.username)
+            if(response.data.userType === 'admin'){
                 navigate('/admin')
             }
-            else if(response.data === 'trainer'){
+            else if(response.data.userType === 'trainer'){
                 navigate('/trainer')
             }
-            else if(response.data === 'intern'){
+            else if(response.data.userType === 'intern'){
                 navigate('/intern')
             }
         } catch (err) {
-            setErrors({ general: 'An error occurred during login.' });
+            console.log(err.response.data);
+            setErrors({ general: err.response.data });
         }
     };
 

@@ -4,7 +4,7 @@ import profile from '../../assets/images/Ellipse4.png';
 import logo from '../../assets/images/smartinternz.png';
 import FileBase64 from 'react-file-base64';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './register.css';
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -15,6 +15,7 @@ const Register = ({ type, endpoint }) => {
     const [courses, setCourses] = useState([]);
     const [refresh, setRefresh] = useState(true);
     const fileInputRef = useRef(null); // Create a reference for the FileBase64 component
+    let navigate=useNavigate()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -107,7 +108,9 @@ const Register = ({ type, endpoint }) => {
     const handleFileDone = (base64String) => {
         setData({ ...data, photo: base64String.base64 });
     };
-
+const navigateLogin=()=>{
+    navigate('/login')
+}
     return (
         <Container fluid className='d-flex align-items-center justify-content-center bgGray' style={{ minHeight: '100vh' }}>
             <ToastContainer />
@@ -118,8 +121,9 @@ const Register = ({ type, endpoint }) => {
                         <h3>{type.charAt(0).toUpperCase() + type.slice(1)} Register</h3>
                     </div>
                     <div className='w-75'>
-                        <Button className=" mt-2 bg-white text-reset border-0 w-100">
-                            <Link to='/login' className='text-decoration-none text-reset '>Login</Link>
+                        <Button className=" mt-2 bg-white text-reset border-0 w-100" onClick={navigateLogin}>
+                            Login 
+                            {/* <Link to='login' className='text-decoration-none text-reset '>Login</Link> */}
                         </Button>
                     </div>
                 </Col>
