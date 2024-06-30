@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
+
 const trainerSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
     specialization: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'course',
         required: true
     },
     dateJoined: {
@@ -28,11 +30,11 @@ const trainerSchema = new mongoose.Schema({
     photo: {
         type: String
     },
-    isApproved:{
+    isApproved: {
         type: Boolean,
-        default:false
+        default: false
     }
-})
+});
 
-const Trainer = mongoose.model('trainer',trainerSchema);
+const Trainer = mongoose.model('trainer', trainerSchema);
 export default Trainer;

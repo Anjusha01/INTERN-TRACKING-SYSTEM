@@ -4,7 +4,7 @@ import Course from '../Models/Courses.js';
 
 export const displayCourseName = async (req, res) => {
     try {
-        const courses = await Course.find({}, 'courseName');
+        const courses = await Course.find({}, '_id courseName');
         res.json(courses);
     } catch (err) {
         res.status(500).json({ message: err.message });

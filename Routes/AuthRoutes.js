@@ -7,7 +7,7 @@ router.post('/trainer/register',trainerRegisterAuth)
 router.post('/intern/register',internRegisterAuth)
 router.post('/admin/register',adminRegisterAuth)
 router.post('/login',authLogin)
-router.get('/auth/:username',verifyToken,tokenAuth);
+router.get('/auth/:id',verifyToken,tokenAuth);
 
 
 export default router

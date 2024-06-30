@@ -6,7 +6,8 @@ const internSchema = new mongoose.Schema({
         required: true
     },
     course: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'course',
         required: true
     },
     dateJoined: {
@@ -28,11 +29,15 @@ const internSchema = new mongoose.Schema({
     photo: {
         type: String
     },
-    isApproved:{
+    isApproved: {
         type: Boolean,
-        default:false
+        default: false
+    },
+    trainerId:{
+        type: mongoose.Types.ObjectId,
+        ref:'trainer'
     }
-})
+});
 
-const Intern = mongoose.model('intern',internSchema);
+const Intern = mongoose.model('intern', internSchema);
 export default Intern;

@@ -1,4 +1,7 @@
 import Course from "../Models/Courses.js";
+import Intern from "../Models/Interns.js";
+import Trainer from "../Models/Trainers.js"
+import User from "../Models/Users.js"
 
 
 export const AddCourse = async (req, res) => {
@@ -69,8 +72,118 @@ export const updateCourses = async (req, res) => {
     }
 };
 
-export const Approval=()=>{
+
+export const updateTrainerStatus = async (req, res) => {
+  const { id, isApproved } = req.body;
+  console.log(req.body);
+  console.log(id);
+
+  try {
+    let updatedTrainerStatus = await Trainer.updateOne({ _id: id }, { $set: { isApproved } });
     
-}
+    let trainer = await Trainer.findOne({ _id: id });
+    if (!trainer) {
+      return res.status(404).json({ message: 'Trainer not found' });
+    }
+    const { username } = trainer;
+    
+
+    // Update User collection based on username
+    let updatedUserStatus = await User.updateOne({ username: username }, { $set: { isApproved } });
+
+    if (updatedTrainerStatus.modifiedCount === 0 || updatedUserStatus.modifiedCount === 0) {
+      return res.status(404).json({ message: 'Trainer not found or no change in status' });
+    }
+    console.log(updatedTrainerStatus, updatedUserStatus);
+
+    res.status(200).json({ message: 'Trainer status updated successfully' });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
+export const updateInternStatus = async (req, res) => {
+    const { id, isApproved } = req.body;
+    console.log(req.body);
+  
+    try {
+      let updatedInternStatus = await Intern.updateOne({ _id: id }, { $set: { isApproved } });
+      
+      let intern = await Intern.findOne({ _id: id });
+      if (!intern) {
+        return res.status(404).json({ message: 'Trainer not found' });
+      }
+      const {_id } = intern;
+      
+  
+      // Update User collection based on username
+      let updatedUserStatus = await User.updateOne({ profileId: _id }, { $set: { isApproved } });
+      
+  
+      if (updatedInternStatus.modifiedCount === 0 || updatedUserStatus.modifiedCount === 0) {
+        return res.status(404).json({ message: 'Trainer not found or no change in status' });
+      }
+      console.log(updatedInternStatus, updatedUserStatus);
+  
+      res.status(200).json({ message: 'Intern status updated successfully' });
+    } catch (e) {
+      res.status(500).json({ message: e.message });
+    }
+  };
+  
+
+  export const trainerDelete = async (req, res) => {
+    const id = req.params.id;
+    try {
+      const deletedTrainer = await Trainer.findByIdAndDelete(id);
+      const deletedUser = await User.findOneAndDelete({ profileId: id });
+      res.status(200).json({ message: 'Trainer and user deleted successfully' });
+    } catch (e) {
+      res.status(500).json({ message: e.message });
+    }
+  };
+
+export const internDelete = async (req, res) => {
+  const id = req.params.id;
+  
+  try {
+    // Delete the intern
+    const deletedIntern = await Intern.findByIdAndDelete(id);
+
+    if (!deletedIntern) {
+      return res.status(404).json({ message: 'Intern not found' });
+    }
+
+    // Delete the corresponding user
+    const deletedUser = await User.findOneAndDelete({ profileId: id });
+
+    if (!deletedUser) {
+      // Since user deletion is not critical in this context, handle it gracefully
+      console.log(`User with profileId ${id} not found.`);
+    }
+
+    res.status(200).json({ message: 'Intern and corresponding user deleted successfully' });
+  } catch (e) {
+    console.error(`Error deleting intern with id ${id}:`, e);
+    res.status(500).json({ message: e.message });
+  }
+};
 
 
+export const assignTrainer = async (req, res) => {
+  console.log(req.body);
+  const updates=req.body
+  console.log(updates);
+
+  try {
+    for (const update of updates) {
+      await Intern.findByIdAndUpdate(update._id, { trainerId: update.trainerId });
+    }
+
+    res.status(200).json({ message: 'Trainers assigned successfully' });
+   
+  } catch (e) {
+    console.error(e.message);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};

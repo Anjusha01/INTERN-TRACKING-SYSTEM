@@ -1,27 +1,34 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-    username:{
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
         type: String,
         required: true
     },
-    email:{
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    userType: {
         type: String,
         required: true
     },
-    password:{
-        type: String,
-        required:true
-    },
-    userType:{
-        type: String,
-        required: true
-    },
-    isApproved:{
+    profileId: {
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'userType',
+        
+    }, // Dynamic reference
+    isApproved: {
         type: Boolean,
-        default:false
-    }
-})
+        default: false
+    },
+});
 
-const User= mongoose.model('user',userSchema);
+const User = mongoose.model('User', userSchema);
 export default User;
