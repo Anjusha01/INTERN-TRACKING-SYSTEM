@@ -112,6 +112,34 @@ export const viewTasks = async (req, res) => {
         res.status(500).json({ message: e.message });
     }
 }
+/////////////////view task by populating all the details//////////////////////////////////////////
+export const viewTaskById=async(req,res)=>{
+    const { taskId } = req.params;
+    console.log(taskId);
+    try {
+        const task = await Task.findById(taskId).populate({
+            path: 'interns.internId',
+            model: 'intern',
+            select: 'name course dateJoined email',
+            populate: {
+                path: 'course',
+                model: 'course',
+                select: 'courseName' // Specify the field to populate from the Course model
+            }
+        });
+
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+        console.log(task);
+
+        res.json(task);
+    } catch (error) {
+        console.error('Error fetching task details:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+
+}
 
 
 export const updateTaskMark = async (req, res) => {
@@ -127,3 +155,31 @@ export const updateTaskMark = async (req, res) => {
         res.status(500).json({ message: e.message });
     }
 };
+
+export const updateTask=async(req,res)=>{
+    const {taskId}=req.params
+    const updatedTask = req.body;
+
+    try {
+        const task = await Task.findByIdAndUpdate(taskId, updatedTask, { new: true });
+        if (!task) {
+            return res.status(404).send('Task not found');
+        }
+        res.json(task);
+    } catch (error) {
+        res.status(500).send('Error updating task: ' + error.message);
+    }
+    
+}
+
+export const deleteTask=async(req,res)=>{
+    console.log(req.params);
+    const {taskId}=req.params
+    try{
+        await Task.findByIdAndDelete(taskId)
+        res.status(200).json({ message: 'Task deleted successfully'});
+    }
+    catch(e){
+        res.status(500).send('Error deleting task: ' + error.message);
+    }
+}

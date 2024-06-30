@@ -1,19 +1,6 @@
 import Course from "../Models/Courses.js";
 import Intern from "../Models/Interns.js"
 
-// export const viewProfile= async(req,res) => {
-//     let profileId= req.params.profileId
-//     try{
-//         let response= await Intern.findOne({_id:profileId})
-//         console.log(response);
-//         res.json(response)
-//     }
-//     catch(e){
-//         res.status(500).json(e.message)
-//     }
-// }
-
-
 export const viewProfile = async (req, res) => {
     let profileId = req.params.profileId;
     console.log(profileId);
